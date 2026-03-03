@@ -1,4 +1,7 @@
 
+# Credentiale (nu se urca pe git)
+credentials.json
+
 # Playwright
 node_modules/
 /test-results/

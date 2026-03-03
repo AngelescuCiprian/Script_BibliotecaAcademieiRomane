@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "playwright test"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -11,5 +13,8 @@
   "devDependencies": {
     "@playwright/test": "^1.58.2",
     "@types/node": "^25.3.3"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
   }
 }
