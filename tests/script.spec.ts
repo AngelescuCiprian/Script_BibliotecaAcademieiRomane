@@ -10,13 +10,12 @@ test('test', async ({ page, context }) => {
 
   for (let i = 0; i < 2; i++) {
     console.log(`\n--- Iteratia ${i + 1}/2 ---`);
-    // Captezi fereastra noua si dai click simultan
     const [newPage] = await Promise.all([
       context.waitForEvent('page'),
       page.getByRole('link', { name: 'Adaugă înregistrare nouă' }).click()
     ]);
 
-    // Astepti ca fereastra noua sa se incarce
+    
     await newPage.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(1000);
     await newPage.getByRole('link', { name: 'Selectează' }).click();
