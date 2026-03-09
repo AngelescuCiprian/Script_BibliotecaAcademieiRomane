@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc --noEmit)",
+      "Bash(npm install --save-dev typescript)",
+      "Bash(node_modules/.bin/tsc --noEmit)"
+    ]
+  }
+}
