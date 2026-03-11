@@ -82,7 +82,7 @@ test('inregistrare exemplare biblioteca', async ({ page, context }) => {
   const { rows, workbook, sheetName } = readExcel();
   const pending = rows
     .map((row, index) => ({ row, index }))
-    .filter(({ row }) => row.status !== 'OK');
+    .filter(({ row }) => row.status !== 'OK' && row.luna !== '' && row.zi !== '');
 
   console.log(`Total rânduri: ${rows.length} | De procesat: ${pending.length}`);
 
