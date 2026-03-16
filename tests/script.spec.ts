@@ -28,6 +28,7 @@ interface ExemplarRow {
   taguri: string;
   status: string;
   'j-cota': string;
+  'Domeniu Interes': string;
 }
 
 function parseFisierPdf(fisierPdf: string): { titlu: string; anArab: number; an: string; nr: string } {
@@ -121,19 +122,20 @@ test('inregistrare exemplare biblioteca', async ({ page, context }) => {
       // 109 - Data
       await newPage.locator("//input[@id='TextField_0']").fill(an);
       await newPage.locator("//input[@id='TextField_1']").fill(row.luna);
-      await newPage.locator("//input[@id='TextField_2']").fill(row.zi);
+      await newPage.locator("//input[@id='TextField_2']").fill(String(row.zi).padStart(2, '0'));
 
       // 200 - Titlu
       await newPage.locator("//input[@id='TextField_4']").fill(titlu);
       await newPage.locator("//input[@id='TextField_5']").fill(row.material_general);
       await newPage.locator("//input[@id='TextField_6']").fill(row.alte_informatii_titlu);
-      await newPage.locator("//input[@id='TextField_7']").fill(numarul_unei_parti);
+      await newPage.locator("//input[@id='TextField_8']").fill(numarul_unei_parti);
 
       // 207 - Numerotare
       await newPage.locator("//img[@id='Any_75']").click();
       await newPage.waitForTimeout(500);
+      await newPage.locator("//input[@id='TextField_9']").click();
       await newPage.locator("//input[@id='TextField_9']").fill(numerotare_spec_data);
-
+      await newPage.waitForTimeout(500);
       // 210 - Publicatie
       await newPage.locator("//input[@id='TextField_10']").fill(row.locul_publicarii);
       await newPage.locator("//input[@id='TextField_11']").fill(row.edituri);
@@ -172,6 +174,10 @@ test('inregistrare exemplare biblioteca', async ({ page, context }) => {
       // j-cota
       await newPage.locator("//input[@id='TextField_47']").fill(row['j-cota']);
 
+      //609-domeniu de interes
+      await newPage.locator("//img[@id='Any_247']").click();
+      await newPage.waitForSelector('#PropertySelection_2_2', { state: 'visible' });
+      await newPage.locator('#PropertySelection_2_2').selectOption({ label: row['Domeniu Interes'] });
       // Salvare
       await newPage.locator("//span[@id='Insert_30']").click();
 
