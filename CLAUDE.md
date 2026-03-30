@@ -48,3 +48,8 @@ This is a **Playwright-based browser automation** project that bulk-registers li
 - Workers are set to 1 and `fullyParallel: false` — intentional, the script is sequential
 - The Excel file is read fresh at the start and updated row-by-row in place after each record
 - Field IDs (`TextField_0`, `TextField_1`, etc.) are positional and specific to the target web app's form layout
+- `fisier_pdf` filename must follow the pattern `TITLU_anArab_an_nr.ext` (e.g. `ARGUS_14_1923_3133.pdf`); `parseFisierPdf` derives title, year, and issue number from this
+- `vedeta_intrare` column holds comma-separated subject headings; the script dynamically clones the 606 field once per heading beyond the first
+- Field 300 (Nota) and field 326 (Frecventa) both target `TextField_14` — Nota is filled only when non-empty, then Frecventa unconditionally overwrites it; this reflects the current form layout
+- Rows are skipped at startup if `luna` or `zi` is empty (in addition to `status === 'OK'`)
+- `playwright.config.js` uses ES module syntax (`import`/`export default`) despite `package.json` having `"type": "commonjs"` — do not change this without testing

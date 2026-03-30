@@ -26,6 +26,8 @@ interface ExemplarRow {
   fisier_pdf: string;
   descriere: string;
   taguri: string;
+  numarul_unei_parti: string;
+  numerotare_spec_data: string;
   status: string;
   'j-cota': string;
   'Domeniu Interes': string;
@@ -83,7 +85,11 @@ test('inregistrare exemplare biblioteca', async ({ page, context }) => {
   const { rows, workbook, sheetName } = readExcel();
   const pending = rows
     .map((row, index) => ({ row, index }))
-    .filter(({ row }) => row.status !== 'OK' && row.luna !== '' && row.zi !== '');
+    .filter(({ row }) => {
+      if (row.status === 'OK') return false;
+      const areManualFieldsProvided = row.numarul_unei_parti !== '' && row.numerotare_spec_data !== '';
+      return areManualFieldsProvided || (row.luna !== '' && row.zi !== '');
+    });
 
   console.log(`Total rânduri: ${rows.length} | De procesat: ${pending.length}`);
 
@@ -101,9 +107,13 @@ test('inregistrare exemplare biblioteca', async ({ page, context }) => {
 
   for (const { row, index } of pending) {
     const { titlu, anArab, an, nr } = parseFisierPdf(row.fisier_pdf);
-    const lunaText = LUNI[parseInt(row.luna, 10)];
-    const numarul_unei_parti = `Anul ${anArab}, nr. ${nr} (${row.zi} ${lunaText} ${an})`;
-    const numerotare_spec_data = `Anul ${toRoman(anArab)}, No. ${nr}, ${row.zi} ${lunaText} ${an}`;
+    const lunaText = row.luna !== '' ? LUNI[parseInt(row.luna, 10)] : '';
+    const numarul_unei_parti = row.numarul_unei_parti !== ''
+      ? row.numarul_unei_parti
+      : `Anul ${anArab}, nr. ${nr} (${row.zi} ${lunaText.toLowerCase()} ${an})`; // in acest field luna trebuie sa fie cu litere mici
+    const numerotare_spec_data = row.numerotare_spec_data !== ''
+      ? row.numerotare_spec_data
+      : `Anul ${toRoman(anArab)}, No. ${nr}, ${row.zi} ${lunaText} ${an}`;
     const denumire_completa = `${titlu} nr. ${nr}/${an}`;
 
     console.log(`\n--- [${index + 1}/${rows.length}] ${denumire_completa} ---`);
@@ -141,16 +151,10 @@ test('inregistrare exemplare biblioteca', async ({ page, context }) => {
       await newPage.locator("//input[@id='TextField_11']").fill(row.edituri);
       await newPage.locator("//input[@id='TextField_12']").fill(an);
       
-      //300-Nota
-      if (row.Nota) {
-        await newPage.locator("//img[@id='Any_110']").click();
-        await newPage.waitForTimeout(500);
-        await newPage.locator("//input[@id='TextField_14']").fill(row.Nota);
-      }
-
+      
       // 326 - Frecventa
       await newPage.locator("//input[@id='TextField_14']").fill(row.frecventa);
-
+      
       // 606 - Subiect (3 vedete de intrare din coloana vedeta_intrare, separate prin virgula)
       const vedete = row.vedeta_intrare.split(',').map(v => v.trim());
 
@@ -178,6 +182,14 @@ test('inregistrare exemplare biblioteca', async ({ page, context }) => {
       await newPage.locator("//img[@id='Any_247']").click();
       await newPage.waitForSelector('#PropertySelection_2_2', { state: 'visible' });
       await newPage.locator('#PropertySelection_2_2').selectOption({ label: row['Domeniu Interes'] });
+      
+      //300-Nota
+      if (row.Nota) {
+        await newPage.locator("//img[@id='Any_110']").click();
+        await newPage.waitForTimeout(500);
+        await newPage.locator("//input[@id='TextField_14']").fill(row.Nota);
+      }
+      
       // Salvare
       await newPage.locator("//span[@id='Insert_30']").click();
 
